@@ -49,6 +49,33 @@ class num:
 
 
 class val:
+
+  '''
+  Arguments:
+    arr: This should be a pointer (mutable object) to the string that the parser is parsing.
+
+    popped: This should be a pointer (mutable object) to the string that the parser has parsed.
+
+  Attributes:
+    arr: A list of the characters that have been popped within the parser
+    
+    popped: A list of the characters that have been successfully popped
+
+    left:
+
+    mid:
+
+    right:
+
+    valid:
+
+  Functions:
+
+
+  Returns:
+    None
+  '''
+
   def __init__(self, arr, popped):
     self.arr = arr
     self.popped = popped
@@ -56,7 +83,6 @@ class val:
     self.mid = None
     self.right = None
     self.val = None
-    self.type = "val"
     self.valid_num = ['0','1','2','3','4','5','6','7','8','9']
     self.consume()
 
@@ -96,14 +122,14 @@ class val:
       if(len(self.arr)>0):
         pop = self.arr.pop(0)
         self.popped.append(pop)
-        val+=pop
+        val += pop
       else:
         print("Error: Expected true, got: ", val)
         print_error(self.arr, self.popped)
         exit(1)
     #Checking if it was actually true
     if val == 'true':
-      self.value=True
+      self.value = True
     else:
       print("Error: Expected true, got: ", val)
       print_error(self.arr,self.popped)
@@ -126,7 +152,7 @@ class val:
         exit(1)
     #Setting it to false
     if val == 'false':
-      self.value=False
+      self.value = False
     else:
       print("Error: Expected false, got: ", val)
       print_error(self.arr,self.popped)
@@ -148,7 +174,7 @@ class val:
         exit(1)
     #Updating variables
     if val == 'null':
-      self.value=None
+      self.value = None
     else:
       print("Error: Expected null, got: ", val)
       print_error(self.arr,self.popped)
@@ -190,7 +216,6 @@ class array_element:
     self.left = None
     self.mid = None
     self.right = None
-    self.type = "array_element"
 
     self.consume()
 
@@ -219,6 +244,31 @@ class array_element:
 
 
 class array:
+
+  '''
+  Arguments:
+    arr: This should be a pointer (mutable object) to the string that the parser is parsing.
+
+    popped: This should be a pointer (mutable object) to the string that the parser has parsed.
+
+  Attributes:
+    arr: A list of the characters that have been popped within the parser
+    
+    popped: A list of the characters that have been successfully popped
+
+    left: Should contain the character '['
+
+    mid: Should contain an array_element object
+
+    right: Should contain the character ']'
+
+  Functions:
+    consume: This function consumes brackets and makes the array_element object to go into self.mid
+
+  Returns:
+    None
+  '''
+
   def __init__(self, arr, popped):
     self.arr = arr
     self.popped = popped
@@ -226,7 +276,6 @@ class array:
     self.left = None
     self.mid = None
     self.right = None
-    self.type = "array"
 
     self.consume()
 
@@ -275,7 +324,6 @@ class item:
     self.left = None
     self.mid = None
     self.right = None
-    self.type = "item"
 
     self.consume()
 
@@ -400,7 +448,7 @@ class json:
     right: Should contain the character '}'
 
   Functions:
-    consume: This function consumes brackets and makes the json_element object to go into self.mid
+    consume: This function consumes braces and makes the json_element object to go into self.mid
 
   Returns:
     None
@@ -466,7 +514,9 @@ class jsony_parser:
 
   Attributes:
     arr: A list of the characters that have been popped within the parser
+
     popped: A list of the characters that have been successfully popped
+
     root: The root object in our "tree" structure for the parsed object
 
   Returns:
