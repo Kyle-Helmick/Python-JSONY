@@ -12,37 +12,40 @@ def print_error(unpopped, popped):
 
 class num:
     def __init__(self, arr, popped):
-        self.arr=arr
-        self.popped=popped
-        self.val=None
+        self.arr = arr
+        self.popped = popped
+        self.val = None
         self.type = "number"
-        self.valid_num=['0','1','2','3','4','5','6','7','8','9']
+        self.valid_num = ['0','1','2','3','4','5','6','7','8','9']
         self.consume()
+
     def consume(self):
         #Adding the first character, could include -
         pop = self.arr.pop(0)
         value=pop
         self.popped.append(pop)
-        decimal=False
+        decimal = False
+
         #Looping to find the rest of the number
-        while(len(self.arr) > 0 and (self.arr[0] in self.valid_num or self.arr[0]=='.')):
+        while(len(self.arr) > 0 and (self.arr[0] in self.valid_num or self.arr[0] == '.')):
           #Checking if there's too many .
           if(decimal and self.arr[0] == '.'):
             print("Error: Only one decimal allowed in numbers")
             print_error(self.arr,self.popped)
             exit(1)
-          pop=self.arr.pop(0)
-          value+=pop
+          pop = self.arr.pop(0)
+          value += pop
           self.popped.append(pop)
           if pop == '.':
             decimal=True
+
         #Checking if we're at the end of the string
         if len(self.arr) == 0:
           print("Error: Expected more characters")
           print_error(self.arr, self.popped)
           exit(1)
         #Updating variables
-        self.val=float(value)
+        self.val = float(value)
 
 
 class val:
@@ -54,9 +57,8 @@ class val:
     self.right = None
     self.val = None
     self.type = "val"
-    self.valid_num=['0','1','2','3','4','5','6','7','8','9']
+    self.valid_num = ['0','1','2','3','4','5','6','7','8','9']
     self.consume()
-
 
   '''Parsing for a string'''
   def string(self):
@@ -84,16 +86,15 @@ class val:
     self.popped.append(pop)
     self.val = value
 
-
   '''Checking for true'''
   def true_test(self):
     #Getting the first character
-    val=self.arr.pop(0)
+    val = self.arr.pop(0)
     self.popped.append(val)
     #Getting the rest
-    for i in range(3):
+    for _ in range(3):
       if(len(self.arr)>0):
-        pop=self.arr.pop(0)
+        pop = self.arr.pop(0)
         self.popped.append(pop)
         val+=pop
       else:
@@ -108,18 +109,17 @@ class val:
       print_error(self.arr,self.popped)
       exit(1)
 
-
   '''Checking for false'''
   def false_test(self):
     #Getting the first character
     val=self.arr.pop(0)
     self.popped.append(val)
-    for i in range(4):
+    for _ in range(4):
       #Checking for end of string
       if(len(self.arr)>0):
-        pop=self.arr.pop(0)
+        pop = self.arr.pop(0)
         self.popped.append(pop)
-        val+=pop
+        val += pop
       else:
         print("Error: Expected  false, got: ", val)
         print_error(self.arr, self.popped)
@@ -132,17 +132,16 @@ class val:
       print_error(self.arr,self.popped)
       exit(1)
 
-
   '''Checking for null'''
   def null_test(self):
-    val=self.arr.pop(0)
+    val = self.arr.pop(0)
     self.popped.append(val)
-    for i in range(3):
+    for _ in range(3):
       #Checking for the end of string
       if(len(self.arr)>0):
-        pop=self.arr.pop(0)
+        pop = self.arr.pop(0)
         self.popped.append(pop)
-        val+=pop
+        val += pop
       else:
         print("Error:  Expected null, got: ", val)
         print_error(self.arr,self.popped)
@@ -318,6 +317,35 @@ class item:
 
 
 class json_element:
+
+  '''
+  Arguments:
+    arr: This should be a pointer (mutable object) to the string that the parser is parsing.
+
+    popped: This should be a pointer (mutable object) to the string that the parser has parsed.
+
+  Attributes:
+    arr: A list of the characters that have been popped within the parser
+    
+    popped: A list of the characters that have been successfully popped
+
+    left: If the json_element only contains a single item this will be empty
+          If the json element contains multiple items this will be an item object
+
+    mid: If the json_element only contains a single item this will be an item object
+         If the json_element contains multiple items this will be the character ','
+
+    right: If the json_element only contains a single item this will be empty
+           If the json_element contains multiple items this will be a json_element object
+
+  Functions:
+    consume: This function creates an item object and then decides whether there are multiple items
+             in the json object
+
+  Returns:
+    None
+  '''
+
   def __init__(self, arr, popped):
     self.arr = arr
     self.popped = popped
@@ -325,7 +353,6 @@ class json_element:
     self.left = None
     self.mid = None
     self.right = None
-    self.type = "json_element"
 
     self.consume()
 
@@ -354,6 +381,31 @@ class json_element:
 
 
 class json:
+
+  '''
+  Arguments:
+    arr: This should be a pointer (mutable object) to the string that the parser is parsing.
+    
+    popped: This should be a pointer (mutable object) to the string that the parser has parsed.
+
+  Attributes:
+    arr: A list of the characters that have been popped within the parser
+
+    popped: A list of the characters that have been successfully popped
+
+    left: Should contain the character '{'
+
+    mid: Should contain a json_element object
+
+    right: Should contain the character '}'
+
+  Functions:
+    consume: This function consumes brackets and makes the json_element object to go into self.mid
+
+  Returns:
+    None
+  '''
+
   def __init__(self, arr, popped):
     self.arr = arr
     self.popped = popped
@@ -361,7 +413,6 @@ class json:
     self.left = None
     self.mid = None
     self.right = None
-    self.type = "json"
 
     self.consume()
 
@@ -407,11 +458,23 @@ class json:
 
 class jsony_parser:
 
+  '''
+  Arguments:
+    test_str: A single line string that has the JSON format. There should be no whitespace
+              inbetween JSON special characters. There shouldn't be any escaped characters within
+              strings as values or keys either.
+
+  Attributes:
+    arr: A list of the characters that have been popped within the parser
+    popped: A list of the characters that have been successfully popped
+    root: The root object in our "tree" structure for the parsed object
+
+  Returns:
+    None
+  '''
+
   def __init__(self, test_str):
-    self.unpopped = list(test_str)
+    self.arr = list(test_str)
     self.popped = []
-    self.root = json(self.unpopped, self.popped)
-
-
-
+    self.root = json(self.arr, self.popped)
 
