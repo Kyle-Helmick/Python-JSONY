@@ -89,14 +89,14 @@ class val:
         self.popped.append(pop)
         val+=pop
       else:
-        print("Error: Expected true, got: ", val)
+        print("Error: Expected true, got:", val)
         print_error(self.arr, self.popped)
         exit(1)
     #Checking if it was actually true
     if val == 'true':
       self.value=True
     else:       
-      print("Error: Expected true, got: ", val)
+      print("Error: Expected true, got:", val)
       print_error(self.arr,self.popped)
       exit(1)
   
@@ -113,14 +113,14 @@ class val:
         self.popped.append(pop)
         val+=pop
       else:
-        print("Error: Expected  false, got: ", val)
+        print("Error: Expected false, got:", val)
         print_error(self.arr, self.popped)
         exit(1)
     #Setting it to false
     if val == 'false':
       self.value=False
     else:
-      print("Error: Expected false, got: ", val)
+      print("Error: Expected false, got:", val)
       print_error(self.arr,self.popped)
       exit(1)
       
@@ -136,14 +136,14 @@ class val:
         self.popped.append(pop)
         val+=pop
       else:
-        print("Error:  Expected null, got: ", val)
+        print("Error:  Expected null, got:", val)
         print_error(self.arr,self.popped)
         exit(1)
     #Updating variables
     if val == 'null':
       self.value=None
     else:
-      print("Error: Expected null, got: ", val)
+      print("Error: Expected null, got:", val)
       print_error(self.arr,self.popped)
       exit(1)
   
@@ -171,7 +171,7 @@ class val:
       self.null_test()
     #If nothing matches, we don't support the type
     else:
-      print("Error: Expected a '' | '[' | '{' to declare a value")
+      print("Error: Expected a '\"' | '[' | '{' | 't' | 'f' | 'n' | '(num)' to declare a value")
       print_error(self.arr, self.popped)
       exit(1)
     
@@ -403,6 +403,3 @@ class jsony_parser:
     self.unpopped = list(test_str)
     self.popped = []
     self.root = json(self.unpopped, self.popped)
-
-
-
