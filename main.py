@@ -209,6 +209,31 @@ class val:
       exit(1)
 
 class array_element:
+
+  '''
+  Arguments:
+    arr: This should be a pointer (mutable object) to the string that the parser is parsing.
+    
+    popped: This should be a pointer (mutable object) to the string that the parser has parsed.
+
+  Attributes:
+    arr: A list of the characters that have been popped within the parser
+
+    popped: A list of the characters that have been successfully popped
+
+    left: Should contain either None, if there is only 1 item in this array, or a val object if multiple items
+
+    mid: Should contain either val object, if there is only 1 item in this array, or a ',' charecter if multiple items
+
+    right: Should contain either None, if there is only 1 item in this array, or a array_element object if multiple items
+
+  Functions:
+    consume: This function consumes brackets and makes the json_element object to go into self.mid
+
+  Returns:
+    None
+  '''
+
   def __init__(self, arr, popped):
     self.arr = arr
     self.popped = popped
@@ -317,7 +342,34 @@ class array:
 
 
 class item:
-  def __init__(self, arr, popped):
+ 
+
+  '''
+  Arguments:
+    arr: This should be a pointer (mutable object) to the string that the parser is parsing.
+    
+    popped: This should be a pointer (mutable object) to the string that the parser has parsed.
+
+  Attributes:
+    arr: A list of the characters that have been popped within the parser
+
+    popped: A list of the characters that have been successfully popped
+
+    left: Should contain the Key to the items Key:value pair - this will be a string 
+
+    mid: Should be the charecter ':'
+
+    right: Should contain the val object
+
+  Functions:
+    consume: This function consumes brackets and makes the json_element object to go into self.mid
+
+  Returns:
+    None
+  '''
+
+
+   def __init__(self, arr, popped):
     self.arr = arr
     self.popped = popped
 
