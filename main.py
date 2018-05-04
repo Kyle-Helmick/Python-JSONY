@@ -19,7 +19,7 @@ class val:
     self.right = None
     self.val = None
     self.type = "val"
-    self.valid_num=['0','1','2','3','4','5','6','7','8','9']
+    self.valid_num = ['0','1','2','3','4','5','6','7','8','9']
     self.consume()
     
     
@@ -39,7 +39,7 @@ class val:
 
     #Checking for end of string
     if len(self.arr) == 0:
-      print("Error: Expected closing quote ")
+      print("Error: Expected closing quote")
       print_error(self.arr, self.popped)
       exit(1)
 
@@ -53,48 +53,48 @@ class val:
   def number(self):
     #Adding the first character, could include -
     pop = self.arr.pop(0)
-    value=pop
+    value = pop
     self.popped.append(pop)
-    decimal=False
+    decimal = False
     #Looping to find the rest of the number
-    while(len(self.arr) > 0 and (self.arr[0] in self.valid_num or self.arr[0]=='.')):
+    while(len(self.arr) > 0 and (self.arr[0] in self.valid_num or self.arr[0] == '.')):
       #Checking if there's too many .
       if(decimal and self.arr[0] == '.'):         
         print("Error: Only one decimal allowed in numbers")
         print_error(self.arr,self.popped)
         exit(1)
-      pop=self.arr.pop(0)
-      value+=pop
+      pop = self.arr.pop(0)
+      value += pop
       self.popped.append(pop)
       if pop == '.':
-        decimal=True
+        decimal = True
     #Checking if we're at the end of the string
     if len(self.arr) == 0:
       print("Error: Expected more characters") 
       print_error(self.arr, self.popped)
       exit(1)
     #Updating variables
-    self.val=float(value)
+    self.val = float(value)
     
     
   '''Checking for true'''
   def true_test(self):
     #Getting the first character
-    val=self.arr.pop(0)
+    val = self.arr.pop(0)
     self.popped.append(val)
     #Getting the rest
-    for i in range(3):
+    for _ in range(3):
       if(len(self.arr)>0):
-        pop=self.arr.pop(0)
+        pop = self.arr.pop(0)
         self.popped.append(pop)
-        val+=pop
+        val += pop
       else:
         print("Error: Expected true, got:", val)
         print_error(self.arr, self.popped)
         exit(1)
     #Checking if it was actually true
     if val == 'true':
-      self.value=True
+      self.value = True
     else:       
       print("Error: Expected true, got:", val)
       print_error(self.arr,self.popped)
@@ -104,21 +104,21 @@ class val:
   '''Checking for false'''
   def false_test(self):
     #Getting the first character
-    val=self.arr.pop(0)
+    val = self.arr.pop(0)
     self.popped.append(val)
-    for i in range(4):
+    for _ in range(4):
       #Checking for end of string
       if(len(self.arr)>0):
-        pop=self.arr.pop(0)
+        pop = self.arr.pop(0)
         self.popped.append(pop)
-        val+=pop
+        val += pop
       else:
         print("Error: Expected false, got:", val)
         print_error(self.arr, self.popped)
         exit(1)
     #Setting it to false
     if val == 'false':
-      self.value=False
+      self.value = False
     else:
       print("Error: Expected false, got:", val)
       print_error(self.arr,self.popped)
@@ -127,21 +127,21 @@ class val:
       
   '''Checking for null'''
   def null_test(self):
-    val=self.arr.pop(0)
+    val = self.arr.pop(0)
     self.popped.append(val)
-    for i in range(3):
+    for _ in range(3):
       #Checking for the end of string
       if(len(self.arr)>0):
-        pop=self.arr.pop(0)
+        pop = self.arr.pop(0)
         self.popped.append(pop)
-        val+=pop
+        val += pop
       else:
         print("Error:  Expected null, got:", val)
         print_error(self.arr,self.popped)
         exit(1)
     #Updating variables
     if val == 'null':
-      self.value=None
+      self.value = None
     else:
       print("Error: Expected null, got:", val)
       print_error(self.arr,self.popped)
