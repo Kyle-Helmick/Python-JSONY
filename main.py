@@ -1,4 +1,5 @@
 def print_error(unpopped, popped):
+
   if len(popped) >= 10:
     print("".join(str(x) for x in popped[-10:]), end='')
   else:
@@ -11,42 +12,64 @@ def print_error(unpopped, popped):
 
 
 class num:
-    def __init__(self, arr, popped):
-        self.arr = arr
-        self.popped = popped
-        self.val = None
-        self.type = "number"
-        self.valid_num = ['0','1','2','3','4','5','6','7','8','9']
-        self.consume()
+  
+  '''
+  Arguments:
+    arr: This should be a pointer (mutable object) to the string that the parser is parsing.
 
-    def consume(self):
-        #Adding the first character, could include -
-        pop = self.arr.pop(0)
-        value=pop
-        self.popped.append(pop)
-        decimal = False
+    popped: This should be a pointer (mutable object) to the string that the parser has parsed.
 
-        #Looping to find the rest of the number
-        while(len(self.arr) > 0 and (self.arr[0] in self.valid_num or self.arr[0] == '.')):
-          #Checking if there's too many .
-          if(decimal and self.arr[0] == '.'):
-            print("Error: Only one decimal allowed in numbers")
-            print_error(self.arr,self.popped)
-            exit(1)
-          pop = self.arr.pop(0)
-          value += pop
-          self.popped.append(pop)
-          if pop == '.':
-            decimal=True
+  Attributes:
+    arr: A list of the characters that have been popped within the parser
+    
+    popped: A list of the characters that have been successfully popped
 
-        #Checking if we're at the end of the string
-        if len(self.arr) == 0:
-          print("Error: Expected more characters")
-          print_error(self.arr, self.popped)
+    val: This should hold a float after self.consume is done
+
+    valid_num: This is an array of valid digits.
+
+  Functions:
+    consume: This pops values off of self.arr only allowing for digits or digits and a single
+             decimal point
+
+  Returns:
+    None
+  '''
+
+  def __init__(self, arr, popped):
+      self.arr = arr
+      self.popped = popped
+      self.val = None
+      self.valid_num = ['0','1','2','3','4','5','6','7','8','9']
+      self.consume()
+
+  def consume(self):
+      #Adding the first character, could include -
+      pop = self.arr.pop(0)
+      self.val = pop
+      self.popped.append(pop)
+      decimal = False
+
+      #Looping to find the rest of the number
+      while(len(self.arr) > 0 and (self.arr[0] in self.valid_num or self.arr[0] == '.')):
+        #Checking if there's too many '.'s
+        if(decimal and self.arr[0] == '.'):
+          print("Error: Only one decimal allowed in numbers")
+          print_error(self.arr,self.popped)
           exit(1)
-        #Updating variables
-        self.val = float(value)
+        pop = self.arr.pop(0)
+        self.val += pop
+        self.popped.append(pop)
+        if pop == '.':
+          decimal=True
 
+      #Checking if we're at the end of the string
+      if len(self.arr) == 0:
+        print("Error: Expected more characters")
+        print_error(self.arr, self.popped)
+        exit(1)
+      #Updating variables
+      self.val = float(self.val)
 
 class val:
 
@@ -61,16 +84,22 @@ class val:
     
     popped: A list of the characters that have been successfully popped
 
-    left:
+    left: This should stay empty
 
-    mid:
+    mid: This should become one of possible values, str | array | json | num | true | false | null
 
-    right:
+    right: This should stay empty
 
-    valid:
+    valid_num: This is an array of valid digits.
 
   Functions:
+    string_consume: This functio.n will try to consume a string and error out if quotes are missing
+                    in any way
 
+    bool_consume: This function will try to consume a boolean and error out if the boolean is
+                  mispelled or not a boolean.
+
+    consume: This function decides which val the parser should attemp to consume.
 
   Returns:
     None
@@ -79,25 +108,23 @@ class val:
   def __init__(self, arr, popped):
     self.arr = arr
     self.popped = popped
+
     self.left = None
-    self.mid = None
+    self.mid = ""
     self.right = None
-    self.val = None
     self.valid_num = ['0','1','2','3','4','5','6','7','8','9']
     self.consume()
 
-  '''Parsing for a string'''
-  def string(self):
+  def string_consume(self):
     #Getting the first quote
-    value = ""
     pop = self.arr.pop(0)
-    value += pop
+    self.mid += pop
     self.popped.append(pop)
 
     #Adding the rest of the string
     while len(self.arr) > 0 and self.arr[0] != '"':
       pop = self.arr.pop(0)
-      value += pop
+      self.mid += pop
       self.popped.append(pop)
 
     #Checking for end of string
@@ -108,105 +135,63 @@ class val:
 
     #Updating variables
     pop = self.arr.pop(0)
-    value += pop
+    self.mid += pop
     self.popped.append(pop)
-    self.val = value
 
-  '''Checking for true'''
-  def true_test(self):
-    #Getting the first character
-    val = self.arr.pop(0)
-    self.popped.append(val)
-    #Getting the rest
-    for _ in range(3):
-      if(len(self.arr)>0):
-        pop = self.arr.pop(0)
-        self.popped.append(pop)
-        val += pop
-      else:
-        print("Error: Expected true, got: ", val)
-        print_error(self.arr, self.popped)
-        exit(1)
-    #Checking if it was actually true
-    if val == 'true':
-      self.value = True
-    else:
-      print("Error: Expected true, got: ", val)
-      print_error(self.arr,self.popped)
-      exit(1)
+  def bool_consume(self):
+    bools = ['false', 'true', 'null']
+    map_ = [False, True, None]
 
-  '''Checking for false'''
-  def false_test(self):
-    #Getting the first character
-    val=self.arr.pop(0)
-    self.popped.append(val)
-    for _ in range(4):
-      #Checking for end of string
-      if(len(self.arr)>0):
+    temp = ""
+    for bool_ in bools:
+      if self.arr[0] == bool_[0]:
         pop = self.arr.pop(0)
+        temp += pop
         self.popped.append(pop)
-        val += pop
-      else:
-        print("Error: Expected  false, got: ", val)
-        print_error(self.arr, self.popped)
-        exit(1)
-    #Setting it to false
-    if val == 'false':
-      self.value = False
-    else:
-      print("Error: Expected false, got: ", val)
-      print_error(self.arr,self.popped)
-      exit(1)
+        for char in bool_[1:]:
+          if self.arr[0] == char:
+            pop = self.arr.pop(0)
+            temp += pop
+            self.popped.append(pop)
+          else:
+            print("Error: Expected bool, got: ", temp)
+            print_error(self.arr, self.popped)
+            exit(1)
+        if temp in bools:
+          self.mid = map_[bools.index(temp)]
 
-  '''Checking for null'''
-  def null_test(self):
-    val = self.arr.pop(0)
-    self.popped.append(val)
-    for _ in range(3):
-      #Checking for the end of string
-      if(len(self.arr)>0):
-        pop = self.arr.pop(0)
-        self.popped.append(pop)
-        val += pop
-      else:
-        print("Error:  Expected null, got: ", val)
-        print_error(self.arr,self.popped)
-        exit(1)
-    #Updating variables
-    if val == 'null':
-      self.value = None
-    else:
-      print("Error: Expected null, got: ", val)
-      print_error(self.arr,self.popped)
+    if temp == "":
+      print("Error: Expected bool indicator 't' | 'f' | 'n'")
+      print_error(self.arr, self.popped)
       exit(1)
 
   def consume(self):
     #String
     if self.arr[0] == '"':
-      self.string()
+      self.string_consume()
+
     #Array
     elif self.arr[0] == '[':
-      self.val = array(self.arr, self.popped)
+      self.mid = array(self.arr, self.popped)
+
     #JSON Object
     elif self.arr[0] == '{':
-      self.val = json(self.arr, self.popped)
+      self.mid = json(self.arr, self.popped)
+
     #Numbers
     elif self.arr[0] in self.valid_num or self.arr[0] == '-':
-      self.val = num(self.arr, self.popped)
+      self.mid = num(self.arr, self.popped)
+    
     #Boolean True
-    elif self.arr[0] == 't':
-      self.true_test()
-    #Boolean False
-    elif self.arr[0] == 'f':
-      self.false_test()
-    #NULL Value
-    elif self.arr[0] == 'n':
-      self.null_test()
+    elif self.arr[0] == 't' or self.arr[0] == 'f' or self.arr[0] == 'n':
+      self.bool_consume()
+    
     #If nothing matches, we don't support the type
     else:
-      print("Error: Expected a '' | '[' | '{' to declare a value")
+      print("Error: Expected a '\"' | '[' | '{' | '0-9' | '-' | 't' | 'f' | 'n' to declare a value")
       print_error(self.arr, self.popped)
       exit(1)
+
 
 class array_element:
 
@@ -221,14 +206,17 @@ class array_element:
 
     popped: A list of the characters that have been successfully popped
 
-    left: Should contain either None, if there is only 1 item in this array, or a val object if multiple items
+    left: If the array_element only contains a single val this will be empty
+          If the array_element contains multiple vals this will be a val object
 
-    mid: Should contain either val object, if there is only 1 item in this array, or a ',' charecter if multiple items
+    mid: If the array_element only contains a single val this will be an val object
+         If the array_element contains multiple items this will be the character ','
 
-    right: Should contain either None, if there is only 1 item in this array, or a array_element object if multiple items
+    right: If the array_element only contains a single val this will be empty
+           If the array_element contains multiple vals this will be an array_element object
 
   Functions:
-    consume: This function consumes brackets and makes the json_element object to go into self.mid
+    consume: This function consumes characters to define vals and array elements
 
   Returns:
     None
@@ -343,7 +331,6 @@ class array:
 
 class item:
  
-
   '''
   Arguments:
     arr: This should be a pointer (mutable object) to the string that the parser is parsing.
@@ -359,17 +346,16 @@ class item:
 
     mid: Should be the charecter ':'
 
-    right: Should contain the val object
+    right: Should contain a val object
 
   Functions:
-    consume: This function consumes brackets and makes the json_element object to go into self.mid
+    consume: This function consumes quotes and makes the val object to go into self.right
 
   Returns:
     None
   '''
 
-
-   def __init__(self, arr, popped):
+  def __init__(self, arr, popped):
     self.arr = arr
     self.popped = popped
 
@@ -549,12 +535,13 @@ class json:
 
     pop = self.arr.pop(0)
     self.right = pop
-    self.arr.append(pop)
+    self.popped.append(pop)
 
     if self.right != '}':
       print("Error: expected closing '}' curly brace")
       print_error(self.arr, self.popped)
       exit(1)
+
 
 class jsony_parser:
 
@@ -580,3 +567,5 @@ class jsony_parser:
     self.popped = []
     self.root = json(self.arr, self.popped)
 
+test = '{"This":"that","this":100,"this":-100,"this":-1.0,"this":1.0,"this":false,"this":true,"this":null}'
+jsony_parser(test)
